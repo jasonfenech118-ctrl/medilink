@@ -139,12 +139,8 @@
   <div id="lock" class="lock">
     <div class="lock-card">
       <div class="lock-ic">🔒</div>
-      <div class="lock-title">MediLink is locked</div>
-      <div class="lock-sub">Enter the access code to view the hospital directory.</div>
-      <input id="lock-input" type="password" inputmode="text" autocomplete="off" autocapitalize="off" spellcheck="false" placeholder="Access code"/>
-      <button id="lock-go" class="lock-btn" type="button">Unlock</button>
-      <label class="lock-remember"><input type="checkbox" id="lock-remember" checked/> Remember on this device</label>
-      <div id="lock-err" class="lock-err" role="alert"></div>
+      <div class="lock-title">MediLink</div>
+      <div class="lock-sub">This hospital directory opens from the private access link your administrator shares with you.</div>
     </div>
   </div>
   <div class="top">
@@ -381,8 +377,7 @@
       var text=await decryptDirectory(code);
       hideLock();
       boot(parseCSV(text));
-      try{ var rem=document.getElementById('lock-remember');
-        if(rem&&rem.checked) localStorage.setItem('mdh-pass',code); else localStorage.removeItem('mdh-pass'); }catch(e){}
+      try{ localStorage.setItem('mdh-pass',code); }catch(e){}   // remember on this device
     }catch(e){
       try{localStorage.removeItem('mdh-pass');}catch(_){}
       if(!silent&&errEl)errEl.textContent='That code is not right.';
