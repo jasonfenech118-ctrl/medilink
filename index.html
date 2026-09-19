@@ -1,0 +1,345 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8"/>
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover"/>
+<meta name="theme-color" content="#12304f"/>
+<title>MediLink</title>
+<!-- Installable web app: adds a home-screen button that opens full-screen. -->
+<link rel="manifest" href="manifest.webmanifest"/>
+<link rel="icon" href="icon-192.png"/>
+<link rel="apple-touch-icon" href="apple-touch.png"/>
+<meta name="mobile-web-app-capable" content="yes"/>
+<meta name="apple-mobile-web-app-capable" content="yes"/>
+<meta name="apple-mobile-web-app-status-bar-style" content="black-translucent"/>
+<meta name="apple-mobile-web-app-title" content="MediLink"/>
+<style>
+  :root{
+    --navy:#12304f; --teal:#0d7377; --ink:#1f2937; --muted:#6b7280;
+    --line:#e2e8f0; --bg:#f4f7fb; --card:#ffffff; --chip:#eef2f7;
+    --ext:#0d7377; --phone:#2563eb; --pager:#b45309;
+    --safe-l:env(safe-area-inset-left); --safe-r:env(safe-area-inset-right);
+  }
+  *{box-sizing:border-box;-webkit-tap-highlight-color:rgba(13,115,119,.15);}
+  html{-webkit-text-size-adjust:100%;text-size-adjust:100%;}
+  html,body{margin:0;padding:0;}
+  body{font-family:'Segoe UI',Arial,Helvetica,sans-serif;color:var(--ink);background:var(--bg);
+    font-size:16px;line-height:1.4;overflow-x:hidden;overscroll-behavior-y:contain;}
+  a{color:inherit;text-decoration:none;}
+
+  /* Sticky header — pads around notches and rounded corners on phones. */
+  .top{position:sticky;top:0;z-index:5;background:linear-gradient(90deg,var(--navy),var(--teal));color:#fff;
+    padding:12px 16px 12px;padding-top:calc(12px + env(safe-area-inset-top));
+    padding-left:calc(16px + var(--safe-l));padding-right:calc(16px + var(--safe-r));
+    box-shadow:0 2px 10px rgba(18,48,79,.18);}
+  .top-row{display:flex;align-items:flex-start;justify-content:space-between;gap:10px;}
+  .top h1{margin:0;font-size:19px;font-weight:800;letter-spacing:.2px;overflow-wrap:anywhere;}
+  .top .sub{font-size:12px;opacity:.85;margin-top:2px;}
+  .top-actions{flex:0 0 auto;display:flex;flex-direction:column;gap:6px;align-items:flex-end;}
+  .backlink{font-size:12px;background:rgba(255,255,255,.16);padding:8px 12px;border-radius:999px;
+    font-weight:600;min-height:34px;display:inline-flex;align-items:center;}
+  .installbtn{background:#fff;color:var(--navy);border:0;font-weight:800;font-size:12px;padding:8px 13px;
+    border-radius:999px;min-height:34px;display:inline-flex;align-items:center;gap:5px;cursor:pointer;
+    box-shadow:0 1px 4px rgba(0,0,0,.15);white-space:nowrap;}
+  .installbtn[hidden]{display:none;}
+  /* Instruction sheet for platforms that can't one-tap install (mainly iOS). */
+  .sheet{position:fixed;inset:0;z-index:20;background:rgba(15,23,32,.55);display:none;align-items:flex-end;
+    justify-content:center;padding:0;}
+  .sheet.show{display:flex;}
+  .sheet-card{background:var(--card);color:var(--ink);width:100%;max-width:460px;
+    border-radius:16px 16px 0 0;padding:18px 18px calc(18px + env(safe-area-inset-bottom));
+    box-shadow:0 -6px 24px rgba(0,0,0,.25);}
+  .sheet-title{font-weight:800;font-size:16px;margin-bottom:8px;}
+  .sheet-card ol{margin:8px 0 0;padding-left:20px;line-height:1.6;font-size:14.5px;}
+  .sheet-card .ic{display:inline-block;background:var(--chip);border:1px solid var(--line);border-radius:6px;
+    padding:0 6px;font-weight:700;}
+  .sheet-h{font-weight:700;font-size:12px;color:var(--muted);text-transform:uppercase;letter-spacing:.4px;margin-top:6px;}
+  .sheet-plat{display:none;}
+  body[data-plat="android"] .sheet-plat.android{display:block;}
+  body[data-plat="ios"] .sheet-plat.ios{display:block;}
+  body[data-plat="other"] .sheet-plat.other{display:block;}
+  .sheet-close{margin-top:16px;width:100%;min-height:46px;border:0;border-radius:11px;background:var(--teal);
+    color:#fff;font-weight:800;font-size:15px;cursor:pointer;}
+  .search{margin-top:11px;position:relative;}
+  .search input{width:100%;min-height:48px;padding:12px 14px 12px 42px;border:0;border-radius:12px;
+    font-size:16px;background:#fff;color:var(--ink);box-shadow:0 1px 0 rgba(0,0,0,.05);appearance:none;}
+  .search .mag{position:absolute;left:14px;top:50%;transform:translateY(-50%);font-size:16px;opacity:.55;}
+  /* Filter chips scroll sideways if they ever outgrow one line on tiny screens. */
+  .filters{display:flex;gap:7px;margin-top:10px;overflow-x:auto;-webkit-overflow-scrolling:touch;
+    scrollbar-width:none;padding-bottom:2px;}
+  .filters::-webkit-scrollbar{display:none;}
+  .chip{flex:0 0 auto;border:1px solid rgba(255,255,255,.35);background:rgba(255,255,255,.10);color:#fff;
+    padding:7px 13px;border-radius:999px;font-size:13px;font-weight:600;cursor:pointer;user-select:none;
+    min-height:34px;display:inline-flex;align-items:center;white-space:nowrap;}
+  .chip.on{background:#fff;color:var(--navy);border-color:#fff;}
+
+  main{max-width:1100px;margin:0 auto;
+    padding:14px 16px calc(60px + env(safe-area-inset-bottom));
+    padding-left:calc(16px + var(--safe-l));padding-right:calc(16px + var(--safe-r));}
+  .count{color:var(--muted);font-size:12.5px;margin:2px 2px 10px;}
+
+  /* One column on phones; the grid fills extra width on tablets and desktop. */
+  .list{display:grid;grid-template-columns:1fr;gap:8px;}
+  @media(min-width:640px){ .list{grid-template-columns:repeat(2,1fr);} }
+  @media(min-width:1000px){ .list{grid-template-columns:repeat(3,1fr);} }
+
+  .row{display:flex;align-items:flex-start;gap:10px;background:var(--card);border:1px solid var(--line);
+    border-radius:12px;padding:11px 12px;}
+  .row .body{flex:1 1 auto;min-width:0;}
+  .row .name{font-weight:600;line-height:1.3;overflow-wrap:anywhere;word-break:break-word;}
+  .row .nums{margin-top:5px;display:flex;flex-wrap:wrap;gap:6px 7px;}
+  .num{display:inline-flex;align-items:center;min-height:36px;font-variant-numeric:tabular-nums;
+    font-weight:700;color:var(--teal);background:#e7f3f2;border:1px solid #c9e6e4;border-radius:9px;
+    padding:6px 11px;font-size:15px;}
+  .num.muted{color:var(--muted);background:var(--chip);border-color:var(--line);font-weight:600;}
+  .tag{flex:0 0 auto;font-size:10px;font-weight:800;text-transform:uppercase;letter-spacing:.4px;
+    padding:5px 8px;border-radius:7px;margin-top:2px;white-space:nowrap;}
+  .tag.ext{color:var(--ext);background:#e2f1f0;}
+  .tag.phone{color:var(--phone);background:#e6efff;}
+  .tag.pager{color:var(--pager);background:#fdefdc;}
+  .note{grid-column:1 / -1;color:var(--muted);text-align:center;padding:36px 12px;font-size:14px;}
+
+  /* Very small phones (e.g. 320px). */
+  @media(max-width:360px){
+    body{font-size:15px;}
+    .top h1{font-size:17px;}
+    .num{font-size:14px;padding:6px 9px;}
+  }
+  @media(prefers-reduced-motion:no-preference){ .row{transition:border-color .12s;} }
+
+  @media (prefers-color-scheme:dark){
+    :root:not([data-theme="light"]){
+      --ink:#e6edf5; --muted:#9aa7b6; --line:#26313f; --bg:#0e141b; --card:#151d27; --chip:#1c2734;
+    }
+    :root:not([data-theme="light"]) .num{background:#12302e;border-color:#1c4b47;color:#4fd0c9;}
+    :root:not([data-theme="light"]) .num.muted{background:#1c2734;color:#9aa7b6;border-color:#26313f;}
+    :root:not([data-theme="light"]) .search input{background:#151d27;color:var(--ink);}
+    :root:not([data-theme="light"]) .tag.ext{background:#12302e;}
+    :root:not([data-theme="light"]) .tag.phone{background:#132239;}
+    :root:not([data-theme="light"]) .tag.pager{background:#2c2313;}
+  }
+</style>
+</head>
+<body>
+  <div class="top">
+    <div class="top-row">
+      <div>
+        <h1>MediLink</h1>
+        <div class="sub">Mater Dei Hospital directory · tap a number to call</div>
+      </div>
+      <div class="top-actions">
+        <button id="install-btn" class="installbtn" type="button" hidden>＋ Add to phone</button>
+      </div>
+    </div>
+    <div class="search">
+      <span class="mag">🔍</span>
+      <input id="q" type="search" autocomplete="off" enterkeyhint="search" placeholder="Search a name or a number…" aria-label="Search the directory"/>
+    </div>
+    <div class="filters" id="filters">
+      <span class="chip on" data-type="all">All</span>
+      <span class="chip" data-type="Extension">Extensions</span>
+      <span class="chip" data-type="Phone number">Phone numbers</span>
+      <span class="chip" data-type="Pager">Pagers</span>
+    </div>
+  </div>
+  <main>
+    <div class="count" id="count"></div>
+    <div class="list" id="list"><div class="note">Loading the directory…</div></div>
+  </main>
+  <div id="sheet" class="sheet">
+    <div class="sheet-card" role="dialog" aria-modal="true" aria-label="Add to Home Screen">
+      <div class="sheet-title">Add MediLink to your Home Screen</div>
+      <div class="sheet-plat android">
+        <div class="sheet-h">On Android — Chrome</div>
+        <ol>
+          <li>Tap the menu <span class="ic">⋮</span> at the top-right of Chrome.</li>
+          <li>Tap <b>Add to Home screen</b> (or <b>Install app</b>).</li>
+          <li>Tap <b>Add</b> / <b>Install</b> — a MediLink button appears on your home screen.</li>
+        </ol>
+      </div>
+      <div class="sheet-plat ios">
+        <div class="sheet-h">On iPhone / iPad — Safari</div>
+        <ol>
+          <li>Tap the <b>Share</b> button <span class="ic">↑</span> at the bottom of the screen.</li>
+          <li>Scroll down and tap <b>Add to Home Screen</b>.</li>
+          <li>Tap <b>Add</b> — a MediLink button appears on your home screen.</li>
+        </ol>
+      </div>
+      <div class="sheet-plat other">
+        <div class="sheet-h">On this device</div>
+        <ol>
+          <li>Open your browser's menu.</li>
+          <li>Choose <b>Install</b> or <b>Add to Home screen</b>.</li>
+          <li>Confirm — a Directory button is added.</li>
+        </ol>
+      </div>
+      <button class="sheet-close" type="button" onclick="closeSheet()">Got it</button>
+    </div>
+  </div>
+<script>
+  var ROWS=[], TYPE='all';
+  function esc(s){return String(s==null?'':s).replace(/[&<>"']/g,function(c){
+    return {'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c];});}
+
+  // A small, correct CSV reader: honours "quoted, fields" that contain commas,
+  // doubled "" quotes and stray newlines, so a value like "6701,6716" stays one field.
+  function parseCSV(text){
+    var rows=[], row=[], field='', inQ=false, i=0, n=text.length;
+    function endField(){row.push(field);field='';}
+    function endRow(){endField();rows.push(row);row=[];}
+    while(i<n){
+      var c=text[i];
+      if(inQ){
+        if(c==='"'){ if(text[i+1]==='"'){field+='"';i+=2;continue;} inQ=false;i++;continue; }
+        field+=c;i++;continue;
+      }
+      if(c==='"'){inQ=true;i++;continue;}
+      if(c===','){endField();i++;continue;}
+      if(c==='\r'){i++;continue;}
+      if(c==='\n'){endRow();i++;continue;}
+      field+=c;i++;
+    }
+    if(field.length||row.length)endRow();
+    return rows;
+  }
+
+  function classForType(t){
+    var s=String(t||'').toLowerCase();
+    if(s.indexOf('pager')>-1)return 'pager';
+    if(s.indexOf('phone')>-1)return 'phone';
+    return 'ext';
+  }
+  function tagLabel(t){
+    var s=String(t||'').toLowerCase();
+    if(s.indexOf('pager')>-1)return 'Pager';
+    if(s.indexOf('phone')>-1)return 'Phone';
+    return 'Ext';
+  }
+  // Numbers can be a single value, a comma-list ("6701,6716") or shorthand
+  // ("4030/1/9"). Comma-lists become separate call chips; anything else stays a
+  // single chip that dials its first real number.
+  function numbersHTML(value){
+    var v=String(value||'').trim();
+    if(!v)return '<span class="num muted">—</span>';
+    var parts = v.indexOf(',')>-1 ? v.split(',') : [v];
+    return parts.map(function(p){
+      p=p.trim(); if(!p)return '';
+      var m=p.match(/\d{3,}/);
+      return m ? '<a class="num" href="tel:'+esc(m[0])+'">'+esc(p)+'</a>'
+               : '<span class="num muted">'+esc(p)+'</span>';
+    }).join('');
+  }
+
+  function render(){
+    var q=(document.getElementById('q').value||'').trim().toLowerCase();
+    var terms=q.split(/\s+/).filter(Boolean);
+    var out=ROWS.filter(function(r){
+      if(TYPE!=='all' && r.type!==TYPE)return false;
+      if(terms.length){
+        var hay=(r.name+' '+r.value).toLowerCase();
+        for(var k=0;k<terms.length;k++){ if(hay.indexOf(terms[k])<0)return false; }
+      }
+      return true;
+    });
+    document.getElementById('count').textContent=
+      out.length+' of '+ROWS.length+' entr'+(ROWS.length===1?'y':'ies');
+    var list=document.getElementById('list');
+    if(!out.length){ list.innerHTML='<div class="note">No entry matches that search.</div>'; return; }
+    var html=new Array(out.length);
+    for(var j=0;j<out.length;j++){
+      var r=out[j], cls=classForType(r.type);
+      html[j]='<div class="row"><div class="body"><div class="name">'+esc(r.name)+
+        '</div><div class="nums">'+numbersHTML(r.value)+'</div></div>'+
+        '<span class="tag '+cls+'">'+tagLabel(r.type)+'</span></div>';
+    }
+    list.innerHTML=html.join('');
+  }
+
+  function setType(t){
+    TYPE=t;
+    var chips=document.querySelectorAll('#filters .chip');
+    for(var i=0;i<chips.length;i++)chips[i].classList.toggle('on',chips[i].getAttribute('data-type')===t);
+    render();
+  }
+
+  function boot(rows){
+    var seen={}, clean=[];
+    for(var i=1;i<rows.length;i++){ // row 0 is the header
+      var r=rows[i]; if(!r)continue;
+      var type=(r[0]||'').trim(), name=(r[1]||'').trim(), value=(r[2]||'').trim();
+      if(!name && !value)continue;
+      var key=type+'|'+name+'|'+value;
+      if(seen[key])continue; seen[key]=1;
+      clean.push({type:type,name:name||'(unnamed)',value:value});
+    }
+    clean.sort(function(a,b){ return a.name.toLowerCase()<b.name.toLowerCase()?-1:a.name.toLowerCase()>b.name.toLowerCase()?1:0; });
+    ROWS=clean;
+    render();
+  }
+
+  document.getElementById('q').addEventListener('input',render);
+  document.getElementById('filters').addEventListener('click',function(e){
+    var chip=e.target.closest('.chip'); if(chip)setType(chip.getAttribute('data-type'));
+  });
+
+  // ── Add-to-Home-Screen ─────────────────────────────────────────────────────
+  // Android/desktop Chrome fire beforeinstallprompt, so the button installs in
+  // one tap. iOS never fires it, so the button shows the Share → Add steps. When
+  // the page is already running as an installed app, the button stays hidden.
+  var deferredPrompt=null;
+  function isStandalone(){
+    try{ return window.matchMedia('(display-mode: standalone)').matches || window.navigator.standalone===true; }
+    catch(e){ return false; }
+  }
+  function isIOS(){ return /iphone|ipad|ipod/i.test(navigator.userAgent) ||
+    (navigator.platform==='MacIntel' && navigator.maxTouchPoints>1); }
+  var installBtn=document.getElementById('install-btn');
+  function showInstall(){ if(installBtn && !isStandalone()) installBtn.hidden=false; }
+  window.addEventListener('beforeinstallprompt',function(e){ e.preventDefault(); deferredPrompt=e; showInstall(); });
+  window.addEventListener('appinstalled',function(){ if(installBtn)installBtn.hidden=true; deferredPrompt=null; });
+  // When Chrome/Android has a native install prompt ready, tapping fires the
+  // real "Add <name> to Home screen?" dialog. Otherwise the button shows the
+  // per-platform steps (the sheet content is static, so it is never blank).
+  installBtn.addEventListener('click',function(){
+    if(deferredPrompt){ var ev=deferredPrompt; deferredPrompt=null; ev.prompt(); if(ev.userChoice&&ev.userChoice.catch)ev.userChoice.catch(function(){}); return; }
+    openSheet();
+  });
+  function platform(){
+    if(isIOS())return 'ios';
+    if(/android/i.test(navigator.userAgent))return 'android';
+    return 'other';
+  }
+  document.body.setAttribute('data-plat', platform());
+  function openSheet(){ document.getElementById('sheet').classList.add('show'); }
+  window.closeSheet=function(){ document.getElementById('sheet').classList.remove('show'); };
+  document.getElementById('sheet').addEventListener('click',function(e){ if(e.target===this)closeSheet(); });
+  // Offer the button whenever the app is not already installed.
+  if(!isStandalone()) showInstall();
+
+  // No service worker: the page always loads straight from the network. Any copy
+  // registered by an earlier version is removed here, and its caches cleared, so
+  // a stale worker can never keep an old or broken page on screen.
+  if('serviceWorker' in navigator){
+    try{
+      navigator.serviceWorker.getRegistrations().then(function(regs){
+        regs.forEach(function(r){ r.unregister(); });
+      }).catch(function(){});
+    }catch(e){}
+    try{
+      if(window.caches && caches.keys){
+        caches.keys().then(function(keys){ keys.forEach(function(k){ if(/medilink/.test(k)) caches.delete(k); }); }).catch(function(){});
+      }
+    }catch(e){}
+  }
+
+  fetch('directory.csv',{cache:'no-cache'})
+    .then(function(res){ if(!res.ok)throw new Error('HTTP '+res.status); return res.text(); })
+    .then(function(text){ boot(parseCSV(text)); })
+    .catch(function(err){
+      document.getElementById('list').innerHTML=
+        '<div class="note">Could not load the directory (assets/directory.csv): '+esc(err.message||err)+
+        '<br/>Open this page from the published site rather than a local file.</div>';
+    });
+</script>
+</body>
+</html>
