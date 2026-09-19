@@ -1,0 +1,267 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8"/>
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover"/>
+<meta name="theme-color" content="#12304f"/>
+<title>MediLink · Administrator</title>
+<link rel="manifest" href="manifest.webmanifest"/>
+<link rel="icon" href="icon-192.png"/>
+<link rel="apple-touch-icon" href="apple-touch.png"/>
+<meta name="mobile-web-app-capable" content="yes"/>
+<meta name="apple-mobile-web-app-capable" content="yes"/>
+<meta name="apple-mobile-web-app-status-bar-style" content="black-translucent"/>
+<meta name="apple-mobile-web-app-title" content="MediLink Admin"/>
+<link rel="stylesheet" href="medilink.css"/>
+</head>
+<body>
+  <!-- Admin lock: the page only opens from the private administrator link (#k=CODE). -->
+  <div id="lock" class="lock">
+    <div class="lock-card">
+      <div class="lock-ic">🔐</div>
+      <div class="lock-title">MediLink · Administrator</div>
+      <div class="lock-sub" id="lock-sub">This is the administrator console. Open it from the private administrator link you keep for yourself.</div>
+      <div class="lock-err" id="lock-err"></div>
+    </div>
+  </div>
+
+  <div class="top">
+    <div class="top-row">
+      <div>
+        <h1>MediLink</h1>
+        <div class="sub">Mater Dei Hospital · administrator console</div>
+      </div>
+      <div class="top-actions">
+        <span class="role">Administrator</span>
+        <button id="install-btn" class="installbtn" type="button" hidden>＋ Add to phone</button>
+      </div>
+    </div>
+    <div class="tabs" id="tabs">
+      <span class="tab on" data-tab="dir">Directory</span>
+      <span class="tab" data-tab="auth">Authorisation <span class="badge" id="pending-badge" hidden>0</span></span>
+    </div>
+    <div class="search" id="dir-search">
+      <span class="mag">🔍</span>
+      <input id="q" type="search" autocomplete="off" enterkeyhint="search" placeholder="Search a name or a number…" aria-label="Search the directory"/>
+    </div>
+    <div class="filters" id="filters">
+      <span class="chip on" data-type="all">All</span>
+      <span class="chip" data-type="Extension">Extensions</span>
+      <span class="chip" data-type="Phone number">Phone numbers</span>
+      <span class="chip" data-type="Pager">Pagers</span>
+    </div>
+  </div>
+
+  <main>
+    <!-- Directory -->
+    <div class="panel" id="panel-dir">
+      <div class="count" id="count"></div>
+      <div class="list" id="list"><div class="note">Loading the directory…</div></div>
+    </div>
+
+    <!-- Authorisation -->
+    <div class="panel" id="panel-auth" hidden>
+      <div class="auth-intro">Staff request access from their phone. Approve someone to give them the directory, or decline the request.</div>
+
+      <div class="auth-import">
+        <h3>Approve someone on another phone</h3>
+        <p>If a staff member is on a different phone, they send you a <b>request code</b>. Paste it here to add them to the queue below.</p>
+        <textarea id="imp-code" placeholder="Paste a staff request code…"></textarea>
+        <div class="lock-err" id="imp-err" style="margin-top:6px;"></div>
+        <div style="margin-top:8px;"><button id="imp-btn" class="btn btn-primary btn-sm" type="button">Add to queue</button></div>
+      </div>
+
+      <div class="auth-sec">Pending <span id="c-pending"></span></div>
+      <div class="reqs" id="reqs-pending"></div>
+
+      <div class="auth-sec">Approved <span id="c-approved"></span></div>
+      <div class="reqs" id="reqs-approved"></div>
+
+      <div class="auth-sec">Declined <span id="c-rejected"></span></div>
+      <div class="reqs" id="reqs-rejected"></div>
+    </div>
+  </main>
+
+  <div id="sheet" class="sheet">
+    <div class="sheet-card" role="dialog" aria-modal="true" aria-label="Add to Home Screen">
+      <div class="sheet-title">Add MediLink to your Home Screen</div>
+      <div class="sheet-plat android">
+        <div class="sheet-h">On Android — Chrome</div>
+        <ol>
+          <li>Tap the menu <span class="ic">⋮</span> at the top-right of Chrome.</li>
+          <li>Tap <b>Add to Home screen</b> (or <b>Install app</b>).</li>
+          <li>Tap <b>Add</b> / <b>Install</b> — a MediLink button appears on your home screen.</li>
+        </ol>
+      </div>
+      <div class="sheet-plat ios">
+        <div class="sheet-h">On iPhone / iPad — Safari</div>
+        <ol>
+          <li>Tap the <b>Share</b> button <span class="ic">↑</span> at the bottom of the screen.</li>
+          <li>Scroll down and tap <b>Add to Home Screen</b>.</li>
+          <li>Tap <b>Add</b> — a MediLink button appears on your home screen.</li>
+        </ol>
+      </div>
+      <div class="sheet-plat other">
+        <div class="sheet-h">On this device</div>
+        <ol>
+          <li>Open your browser's menu.</li>
+          <li>Choose <b>Install</b> or <b>Add to Home screen</b>.</li>
+          <li>Confirm — a Directory button is added.</li>
+        </ol>
+      </div>
+      <button class="sheet-close" type="button" onclick="closeSheet()">Got it</button>
+    </div>
+  </div>
+
+<script src="medilink-data.js"></script>
+<script src="medilink-core.js"></script>
+<script>
+  MDL.wireDirectoryUI();
+  var esc=MDL.esc;
+
+  var lock=document.getElementById('lock');
+  function showLock(){ lock.classList.add('show'); }
+  function hideLock(){ lock.classList.remove('show'); }
+
+  // ── Tabs ────────────────────────────────────────────────────────────────────
+  function setTab(t){
+    document.querySelectorAll('#tabs .tab').forEach(function(el){ el.classList.toggle('on',el.getAttribute('data-tab')===t); });
+    var dir = (t==='dir');
+    document.getElementById('panel-dir').hidden = !dir;
+    document.getElementById('panel-auth').hidden = dir;
+    document.getElementById('dir-search').style.display = dir ? '' : 'none';
+    document.getElementById('filters').style.display = dir ? '' : 'none';
+    if(!dir) renderRequests();
+  }
+  document.getElementById('tabs').addEventListener('click',function(e){
+    var tab=e.target.closest('.tab'); if(tab)setTab(tab.getAttribute('data-tab'));
+  });
+
+  // ── Authorisation queue ───────────────────────────────────────────────────────
+  function setStatus(id,status){
+    var all=MDL.loadRequests();
+    for(var i=0;i<all.length;i++){ if(all[i].id===id){ all[i].status=status; break; } }
+    MDL.saveRequests(all); renderRequests();
+  }
+  function removeReq(id){
+    var all=MDL.loadRequests().filter(function(r){ return r.id!==id; });
+    MDL.saveRequests(all); renderRequests();
+  }
+  window.mdlApprove=function(id){ setStatus(id,'approved'); revealLink(id); };
+  window.mdlReject =function(id){ setStatus(id,'rejected'); };
+  window.mdlDelete =function(id){ removeReq(id); };
+  window.mdlReopen =function(id){ setStatus(id,'pending'); };
+
+  function accessLink(){ return MDL.buildAccessLink(MDL.getPass()); }
+
+  window.mdlCopyLink=function(id,btn){
+    MDL.copyText(accessLink()).then(function(ok){
+      btn.textContent = ok ? '✓ Link copied' : 'Copy failed';
+      setTimeout(function(){ btn.textContent='Copy access link'; },1800);
+    });
+  };
+  window.mdlShareLink=function(id){
+    var r=MDL.findRequest(id); var who=r?(r.name+' '+r.surname):'you';
+    if(navigator.share){ navigator.share({title:'MediLink access',
+      text:'Hi '+who+', here is your MediLink access link. Open it on your phone to use the hospital directory:',
+      url:accessLink()}).catch(function(){}); }
+  };
+  function revealLink(id){
+    setTab('auth');
+    setTimeout(function(){
+      var box=document.getElementById('link-'+id);
+      if(box){ box.hidden=false; box.scrollIntoView({block:'center',behavior:'smooth'}); }
+    },30);
+  }
+
+  function reqCard(r){
+    var who=esc(r.name+' '+r.surname);
+    var meta='<div class="meta">Ward / location: <b>'+esc(r.ward||'—')+'</b></div>';
+    var when='<div class="when">Requested '+esc(MDL.fmtWhen(r.ts))+'</div>';
+    var acts='', extra='';
+    if(r.status==='pending'){
+      acts='<button class="btn btn-ok btn-sm" type="button" onclick="mdlApprove(\''+r.id+'\')">Approve</button>'+
+           '<button class="btn btn-bad btn-sm" type="button" onclick="mdlReject(\''+r.id+'\')">Decline</button>';
+    } else if(r.status==='approved'){
+      acts='<span class="req-status approved">✓ Approved</span>'+
+           '<button class="btn btn-ghost btn-sm" type="button" onclick="mdlReopen(\''+r.id+'\')">Move to pending</button>'+
+           '<button class="btn btn-ghost btn-sm" type="button" onclick="mdlDelete(\''+r.id+'\')">Remove</button>';
+      var link=esc(accessLink());
+      extra='<div class="code-out" id="link-'+r.id+'" hidden>Send this access link to '+who+':<br/><br/>'+link+
+            '<div class="linkrow" style="margin-top:10px;display:flex;gap:8px;flex-wrap:wrap;">'+
+            '<button class="btn btn-primary btn-sm" type="button" onclick="mdlCopyLink(\''+r.id+'\',this)">Copy access link</button>'+
+            (navigator.share?'<button class="btn btn-ghost btn-sm" type="button" onclick="mdlShareLink(\''+r.id+'\')">Share…</button>':'')+
+            '</div></div>'+
+            '<div class="linkrow"><button class="btn btn-ghost btn-sm" type="button" onclick="(document.getElementById(\'link-'+r.id+'\').hidden=false)">Show access link</button></div>';
+    } else { // rejected
+      acts='<span class="req-status rejected">✕ Declined</span>'+
+           '<button class="btn btn-ok btn-sm" type="button" onclick="mdlApprove(\''+r.id+'\')">Approve instead</button>'+
+           '<button class="btn btn-ghost btn-sm" type="button" onclick="mdlDelete(\''+r.id+'\')">Remove</button>';
+    }
+    return '<div class="req"><div class="who">'+who+'</div>'+meta+when+
+           '<div class="acts">'+acts+'</div>'+extra+'</div>';
+  }
+
+  function renderRequests(){
+    var all=MDL.loadRequests().slice().sort(function(a,b){ return b.ts-a.ts; });
+    var groups={pending:[],approved:[],rejected:[]};
+    all.forEach(function(r){ (groups[r.status]||groups.pending).push(r); });
+    function fill(elId,arr,empty){
+      var el=document.getElementById(elId);
+      el.innerHTML = arr.length ? arr.map(reqCard).join('') : '<div class="note" style="padding:18px 12px;">'+empty+'</div>';
+    }
+    fill('reqs-pending',groups.pending,'No requests waiting.');
+    fill('reqs-approved',groups.approved,'Nobody approved yet.');
+    fill('reqs-rejected',groups.rejected,'No declined requests.');
+    document.getElementById('c-pending').textContent = groups.pending.length?('· '+groups.pending.length):'';
+    document.getElementById('c-approved').textContent = groups.approved.length?('· '+groups.approved.length):'';
+    document.getElementById('c-rejected').textContent = groups.rejected.length?('· '+groups.rejected.length):'';
+    var badge=document.getElementById('pending-badge');
+    if(groups.pending.length){ badge.hidden=false; badge.textContent=groups.pending.length; }
+    else { badge.hidden=true; }
+  }
+  MDL._renderRequests = renderRequests;
+
+  document.getElementById('imp-btn').addEventListener('click',function(){
+    var ta=document.getElementById('imp-code'), err=document.getElementById('imp-err');
+    err.style.color=''; err.textContent='';
+    var code=(ta.value||'').trim();
+    if(!code){ err.textContent='Paste a request code first.'; return; }
+    try{
+      var req=MDL.unpackReq(code);
+      MDL.upsertRequest(req);
+      ta.value='';
+      err.style.color='#0f766e'; err.textContent='Added '+req.name+' '+req.surname+' to the queue below.';
+      renderRequests();
+      setTimeout(function(){ err.textContent=''; err.style.color=''; },3500);
+    }catch(e){ err.textContent='That code is not valid. Ask them to copy it again.'; }
+  });
+
+  // Keep the queue live if a staff request arrives from another tab on this device.
+  window.addEventListener('storage',function(e){ if(e.key===MDL.LS.requests) renderRequests(); });
+  document.addEventListener('visibilitychange',function(){ if(!document.hidden) renderRequests(); });
+
+  // ── Boot ──────────────────────────────────────────────────────────────────
+  async function openConsole(){ hideLock(); renderRequests(); }
+
+  (async function(){
+    var linkCode=null;
+    try{ var mm=(location.hash||'').match(/[#&](?:k|unlock)=([^&]+)/); if(mm) linkCode=decodeURIComponent(mm[1]); }catch(e){}
+    if(linkCode){
+      try{ history.replaceState(null,'',location.pathname+location.search); }catch(e){}
+      showLock();
+      if(await MDL.unlock(linkCode)){ MDL.setPass(linkCode); return openConsole(); }
+      document.getElementById('lock-err').textContent='That administrator link is not valid.';
+      return;
+    }
+    var saved=MDL.getPass();
+    if(saved){
+      showLock();
+      if(await MDL.unlock(saved)){ return openConsole(); }
+      MDL.clearPass();
+    }
+    showLock(); // waiting for a valid administrator link
+  })();
+</script>
+</body>
+</html>
