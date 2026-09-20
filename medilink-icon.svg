@@ -67,13 +67,41 @@
     </g>
   </g>
 
-  <!-- Telephone receiver laid over the directory. -->
-  <g filter="url(#phoneShadow)" transform="rotate(-12 525 520)">
-    <path d="M358 358C388 493 508 620 654 674" fill="none" stroke="#ffffff" stroke-width="126" stroke-linecap="round" opacity="0.96"/>
-    <path d="M358 358C388 493 508 620 654 674" fill="none" stroke="url(#phone)" stroke-width="92" stroke-linecap="round"/>
-    <rect x="282" y="286" width="185" height="112" rx="45" fill="#ffffff"/>
-    <rect x="298" y="302" width="153" height="80" rx="32" fill="url(#phone)"/>
-    <rect x="586" y="631" width="190" height="112" rx="45" fill="#ffffff"/>
-    <rect x="602" y="647" width="158" height="80" rx="32" fill="url(#phone)"/>
+  <!-- Classic rotary desk telephone in front of the directory. -->
+  <g filter="url(#phoneShadow)">
+    <!-- Lower plinth gives the phone its unmistakable vintage silhouette. -->
+    <path d="M325 675H699C724 675 744 691 751 714L777 791C786 819 765 846 736 846H288C259 846 238 819 247 791L273 714C280 691 300 675 325 675Z"
+          fill="#0b243b" stroke="#f7fbfd" stroke-width="18"/>
+    <path d="M292 735H732L749 793C752 804 744 814 733 814H291C280 814 272 804 275 793Z" fill="#12304f"/>
+
+    <!-- Sloped body of a traditional rotary telephone. -->
+    <path d="M370 431C377 389 412 358 455 358H569C612 358 647 389 654 431L704 681H320Z"
+          fill="url(#phone)" stroke="#f7fbfd" stroke-width="18" stroke-linejoin="round"/>
+    <path d="M389 454C395 420 423 395 458 395H566C601 395 629 420 635 454L674 653H350Z"
+          fill="#12304f" opacity="0.35"/>
+
+    <!-- Rotary dial and finger holes. -->
+    <circle cx="512" cy="554" r="123" fill="#f7fbfd" stroke="#0a2b44" stroke-width="18"/>
+    <circle cx="512" cy="554" r="85" fill="#dfeaf0" stroke="#0d7377" stroke-width="15"/>
+    <g fill="#12304f">
+      <circle cx="512" cy="459" r="16"/>
+      <circle cx="573" cy="481" r="16"/>
+      <circle cx="607" cy="537" r="16"/>
+      <circle cx="596" cy="602" r="16"/>
+      <circle cx="545" cy="642" r="16"/>
+      <circle cx="479" cy="642" r="16"/>
+      <circle cx="428" cy="602" r="16"/>
+      <circle cx="417" cy="537" r="16"/>
+      <circle cx="451" cy="481" r="16"/>
+    </g>
+    <circle cx="512" cy="554" r="40" fill="#0d7377"/>
+    <circle cx="512" cy="554" r="18" fill="#f7fbfd" opacity="0.92"/>
+
+    <!-- Heavy horizontal receiver with flared earpieces. -->
+    <path d="M334 304C342 275 369 255 399 255H625C655 255 682 275 690 304L697 328L727 339C750 347 763 372 756 395L741 447C734 471 708 485 684 477L621 457C602 451 590 433 592 413L596 383H428L432 413C434 433 422 451 403 457L340 477C316 485 290 471 283 447L268 395C261 372 274 347 297 339L327 328Z"
+          fill="#0b243b" stroke="#f7fbfd" stroke-width="18" stroke-linejoin="round"/>
+    <path d="M354 315C360 298 376 287 394 287H630C648 287 664 298 670 315L681 349H343Z" fill="#214b68"/>
+    <path d="M298 373L333 361L348 431L320 440C312 443 303 438 301 430L287 393C284 385 289 376 298 373Z" fill="#0d7377"/>
+    <path d="M726 373L691 361L676 431L704 440C712 443 721 438 723 430L737 393C740 385 735 376 726 373Z" fill="#0d7377"/>
   </g>
 </svg>
