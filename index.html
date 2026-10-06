@@ -73,15 +73,20 @@
     min-height:34px;display:inline-flex;align-items:center;white-space:nowrap;}
   .chip.on{background:#fff;color:var(--navy);border-color:#fff;}
 
-  main{max-width:1100px;margin:0 auto;
+  main{margin:0 auto;
     padding:14px 16px calc(60px + env(safe-area-inset-bottom));
     padding-left:calc(16px + var(--safe-l));padding-right:calc(16px + var(--safe-r));}
   .count{color:var(--muted);font-size:12.5px;margin:2px 2px 10px;}
 
-  /* One column on phones; the grid fills extra width on tablets and desktop. */
+  /* Always a single phone-style column, on every screen size. */
   .list{display:grid;grid-template-columns:1fr;gap:8px;}
-  @media(min-width:640px){ .list{grid-template-columns:repeat(2,1fr);} }
-  @media(min-width:1000px){ .list{grid-template-columns:repeat(3,1fr);} }
+
+  /* MediLink is a mobile app: on tablets and desktop browsers it stays a phone-sized
+     column centred on the screen instead of stretching into a wide web layout. */
+  @media(min-width:520px){
+    html{background:#d9e1ea;}
+    body{max-width:480px;margin:0 auto;min-height:100vh;box-shadow:0 0 0 1px var(--line),0 10px 40px rgba(18,48,79,.18);}
+  }
 
   .row{display:flex;align-items:flex-start;gap:10px;background:var(--card);border:1px solid var(--line);
     border-radius:12px;padding:11px 12px;}
@@ -117,6 +122,9 @@
     :root:not([data-theme="light"]) .tag.ext{background:#12302e;}
     :root:not([data-theme="light"]) .tag.phone{background:#132239;}
     :root:not([data-theme="light"]) .tag.pager{background:#2c2313;}
+  }
+  @media (prefers-color-scheme:dark) and (min-width:520px){
+    html:not([data-theme="light"]){background:#060a0f;}
   }
 </style>
 </head>
