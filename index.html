@@ -13,6 +13,26 @@
 <meta name="apple-mobile-web-app-capable" content="yes"/>
 <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent"/>
 <meta name="apple-mobile-web-app-title" content="MediLink"/>
+<script>
+  /* Phones with the browser's "Desktop site" option on pretend the screen is ~980px wide and
+     shrink the page. Detect the real phone width and scale the app back up to fill the screen,
+     so it always looks like the phone app. Real computers are left alone. */
+  (function(){
+    var root=document.documentElement, meta=document.querySelector('meta[name=viewport]');
+    function fit(){
+      var dev=screen.width||0;
+      var vw=window.innerWidth;
+      root.style.zoom='';
+      if(!dev || dev>820 || vw<=dev*1.1) return;   // not a phone in desktop mode
+      if(meta) meta.setAttribute('content','width='+dev+', initial-scale=1, viewport-fit=cover');
+      vw=window.innerWidth;
+      if(vw>dev*1.1) root.style.zoom=(vw/dev).toFixed(3);
+    }
+    fit();
+    window.addEventListener('resize',fit);
+    window.addEventListener('orientationchange',function(){ setTimeout(fit,250); });
+  })();
+</script>
 <style>
   :root{
     --navy:#12304f; --teal:#0d7377; --ink:#1f2937; --muted:#6b7280;
