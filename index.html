@@ -77,7 +77,18 @@
   .sheet-plat{display:none;}
   body[data-plat="android"] .sheet-plat.android{display:block;}
   body[data-plat="ios"] .sheet-plat.ios{display:block;}
+  body[data-plat="ios-ext"] .sheet-plat.iosext{display:block;}
   body[data-plat="other"] .sheet-plat.other{display:block;}
+  /* iPhone-outside-Safari tip: "Add to Home Screen" only exists in Safari. */
+  .iostip{display:none;align-items:flex-start;gap:8px;background:#fff8e6;border:1px solid #f5d98a;color:#7c5a12;
+    border-radius:12px;padding:11px 12px;margin:12px 0 2px;font-size:13px;line-height:1.5;}
+  .iostip.show{display:flex;}
+  .iostip .it-body{flex:1 1 auto;min-width:0;}
+  .iostip b{color:#5c430c;}
+  .iostip .it-actions{display:flex;gap:8px;margin-top:9px;flex-wrap:wrap;}
+  .iostip button{border:0;border-radius:9px;font-weight:800;font-size:12.5px;cursor:pointer;}
+  .iostip .it-copy{background:var(--teal);color:#fff;min-height:38px;padding:0 14px;}
+  .iostip .it-close{background:transparent;color:#7c5a12;font-size:17px;line-height:1;padding:2px 4px;align-self:flex-start;}
   .sheet-close{margin-top:16px;width:100%;min-height:46px;border:0;border-radius:11px;background:var(--teal);
     color:#fff;font-weight:800;font-size:15px;cursor:pointer;}
   .search{margin-top:11px;position:relative;}
@@ -171,6 +182,15 @@
     </div>
   </div>
   <main>
+    <div id="ios-tip" class="iostip">
+      <div class="it-body">
+        📲 <b>On iPhone?</b> To add MediLink to your Home Screen you must open this page in <b>Safari</b>, then use <b>Share → Add to Home Screen</b>. Chrome and in-app browsers (WhatsApp, Gmail, Messenger) don't offer it.
+        <div class="it-actions">
+          <button type="button" class="it-copy" id="ios-copy">Copy link for Safari</button>
+        </div>
+      </div>
+      <button type="button" class="it-close" id="ios-tip-close" aria-label="Dismiss">✕</button>
+    </div>
     <div class="count" id="count"></div>
     <div class="list" id="list"><div class="note">Loading the directory…</div></div>
   </main>
@@ -192,6 +212,17 @@
           <li>Scroll down and tap <b>Add to Home Screen</b>.</li>
           <li>Tap <b>Add</b> — a MediLink button appears on your home screen.</li>
         </ol>
+      </div>
+      <div class="sheet-plat iosext">
+        <div class="sheet-h">On iPhone — open in Safari first</div>
+        <ol>
+          <li>iPhone only lets you add apps to the Home Screen from <b>Safari</b>.</li>
+          <li>Copy this link, open <b>Safari</b>, and paste it in the address bar:
+            <div style="margin-top:8px;"><button type="button" class="installbtn" id="ios-copy2" style="box-shadow:none;border:1px solid var(--line);">Copy link</button></div>
+          </li>
+          <li>In Safari, tap <b>Share</b> <span class="ic">↑</span> → <b>Add to Home Screen</b> → <b>Add</b>.</li>
+        </ol>
+        <div style="font-size:12px;color:var(--muted);margin-top:8px;line-height:1.5;">Inside WhatsApp, Gmail or Messenger? Use their menu's <b>Open in Safari</b> / <b>Open in browser</b> option. In Safari, avoid a <b>Private</b> tab — it hides Add to Home Screen.</div>
       </div>
       <div class="sheet-plat other">
         <div class="sheet-h">On this device</div>
@@ -332,8 +363,18 @@
     if(deferredPrompt){ var ev=deferredPrompt; deferredPrompt=null; ev.prompt(); if(ev.userChoice&&ev.userChoice.catch)ev.userChoice.catch(function(){}); return; }
     openSheet();
   });
+  // On iOS, "Add to Home Screen" exists only in Safari. Real iOS Safari defines
+  // navigator.standalone; Chrome/Firefox/Edge and in-app webviews (WhatsApp,
+  // Gmail, Messenger, Facebook…) don't, so they can't install — detect those.
+  function iosBrowser(){
+    if(!isIOS())return 'n/a';
+    var ua=navigator.userAgent;
+    if(/CriOS|FxiOS|EdgiOS|OPiOS|GSA|FBAN|FBAV|FBIOS|Instagram|Line|Twitter|WhatsApp|SnapChat/i.test(ua))return 'other';
+    if(typeof navigator.standalone==='undefined')return 'other';  // in-app webview
+    return 'safari';
+  }
   function platform(){
-    if(isIOS())return 'ios';
+    if(isIOS())return iosBrowser()==='safari' ? 'ios' : 'ios-ext';
     if(/android/i.test(navigator.userAgent))return 'android';
     return 'other';
   }
@@ -341,8 +382,25 @@
   function openSheet(){ document.getElementById('sheet').classList.add('show'); }
   window.closeSheet=function(){ document.getElementById('sheet').classList.remove('show'); };
   document.getElementById('sheet').addEventListener('click',function(e){ if(e.target===this)closeSheet(); });
+
+  // Copy the current page link so it can be pasted into Safari.
+  function copyLink(btn){
+    var url=location.href, label=btn?btn.textContent:'';
+    function done(ok){ if(!btn)return; btn.textContent= ok?'✓ Copied — paste in Safari':'Press-and-hold to copy the address'; setTimeout(function(){btn.textContent=label;},2400); }
+    if(navigator.clipboard&&navigator.clipboard.writeText){ navigator.clipboard.writeText(url).then(function(){done(true);},function(){done(false);}); return; }
+    try{ var ta=document.createElement('textarea'); ta.value=url; ta.style.position='fixed'; ta.style.opacity='0'; document.body.appendChild(ta); ta.focus(); ta.select(); var ok=document.execCommand('copy'); document.body.removeChild(ta); done(ok); }
+    catch(e){ done(false); }
+  }
+  var iosCopy=document.getElementById('ios-copy'); if(iosCopy)iosCopy.addEventListener('click',function(){copyLink(this);});
+  var iosCopy2=document.getElementById('ios-copy2'); if(iosCopy2)iosCopy2.addEventListener('click',function(){copyLink(this);});
+  var iosTipClose=document.getElementById('ios-tip-close'); if(iosTipClose)iosTipClose.addEventListener('click',function(){ var t=document.getElementById('ios-tip'); if(t)t.classList.remove('show'); });
+
   // Offer the button whenever the app is not already installed.
-  if(!isStandalone()) showInstall();
+  if(!isStandalone()){
+    showInstall();
+    // An iPhone outside Safari can't add to the Home Screen — surface the tip.
+    if(isIOS() && iosBrowser()!=='safari'){ var tip=document.getElementById('ios-tip'); if(tip)tip.classList.add('show'); }
+  }
 
   // No service worker: the page always loads straight from the network. Any copy
   // registered by an earlier version is removed here, and its caches cleared, so
