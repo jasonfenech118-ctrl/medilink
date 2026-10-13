@@ -395,12 +395,10 @@
   var iosCopy2=document.getElementById('ios-copy2'); if(iosCopy2)iosCopy2.addEventListener('click',function(){copyLink(this);});
   var iosTipClose=document.getElementById('ios-tip-close'); if(iosTipClose)iosTipClose.addEventListener('click',function(){ var t=document.getElementById('ios-tip'); if(t)t.classList.remove('show'); });
 
-  // Offer the button whenever the app is not already installed.
-  if(!isStandalone()){
-    showInstall();
-    // An iPhone outside Safari can't add to the Home Screen — surface the tip.
-    if(isIOS() && iosBrowser()!=='safari'){ var tip=document.getElementById('ios-tip'); if(tip)tip.classList.add('show'); }
-  }
+  // MediLink is a website that works as-is — installing is optional, so don't
+  // nag anyone to do it. The "Add to phone" button stays for those who want an
+  // icon (a one-tap install on Android; the Safari steps on iPhone).
+  if(!isStandalone()) showInstall();
 
   // No service worker: the page always loads straight from the network. Any copy
   // registered by an earlier version is removed here, and its caches cleared, so
