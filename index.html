@@ -143,6 +143,109 @@
   }
   @media(prefers-reduced-motion:no-preference){ .row{transition:border-color .12s;} }
 
+  /* ── Tabs ── */
+  .tabs{display:flex;gap:4px;margin-top:11px;background:rgba(255,255,255,.14);padding:4px;border-radius:12px;}
+  .tab{flex:1 1 0;border:0;background:transparent;color:#fff;font-weight:700;font-size:14px;min-height:38px;
+    border-radius:9px;cursor:pointer;display:inline-flex;align-items:center;justify-content:center;gap:6px;}
+  .tab.on{background:#fff;color:var(--navy);box-shadow:0 1px 4px rgba(0,0,0,.15);}
+  .tab .dot{width:8px;height:8px;border-radius:50%;background:#ef4444;display:inline-block;}
+  .tab .dot[hidden]{display:none;}
+  body[data-view="order"] #dir-controls, body[data-view="order"] #view-dir{display:none;}
+  body:not([data-view="order"]) #view-order, body:not([data-view="order"]) #order-actions{display:none;}
+  body[data-view="order"] main{padding-bottom:calc(96px + env(safe-area-inset-bottom));}
+
+  /* ── Ordering ── */
+  .due{border-radius:12px;padding:11px 13px;font-size:13.5px;line-height:1.5;margin-bottom:12px;
+    background:#e9f1fb;border:1px solid #c9dbf2;color:#16365a;}
+  .due.today{background:#fff4e5;border-color:#f5cf96;color:#7a4508;}
+  .due.ok{background:#e7f6ee;border-color:#bfe5cf;color:#14532d;}
+  .linkbtn{background:none;border:0;padding:0;color:inherit;font-weight:800;text-decoration:underline;cursor:pointer;font-size:inherit;}
+  .card{background:var(--card);border:1px solid var(--line);border-radius:12px;padding:12px;margin-bottom:12px;}
+  .card-h{font-weight:800;font-size:13px;text-transform:uppercase;letter-spacing:.4px;color:var(--muted);margin-bottom:8px;}
+  .fields{display:grid;grid-template-columns:1fr 1fr;gap:9px;}
+  .fields label{display:flex;flex-direction:column;gap:4px;font-size:12px;font-weight:700;color:var(--muted);min-width:0;}
+  .fields .full{grid-column:1 / -1;}
+  .fields input, .p2-search{width:100%;min-height:42px;border:1px solid var(--line);border-radius:9px;padding:8px 10px;
+    font-size:16px;background:var(--bg);color:var(--ink);font-family:inherit;appearance:none;}
+  .recips{font-size:13px;line-height:1.7;}
+  .recips .addr{font-weight:700;overflow-wrap:anywhere;}
+  .recips .copy{border:1px solid var(--line);background:var(--chip);color:var(--ink);border-radius:7px;font-size:11.5px;
+    font-weight:700;padding:3px 8px;margin-left:6px;cursor:pointer;}
+  .sec{margin:16px 0 8px;}
+  .sec-h{display:flex;align-items:center;justify-content:space-between;gap:8px;}
+  .sec-t{font-weight:800;font-size:15.5px;line-height:1.25;}
+  .sec-s{font-size:12px;color:var(--muted);margin-top:2px;}
+  .badge{flex:0 0 auto;font-size:11px;font-weight:800;padding:4px 9px;border-radius:999px;background:var(--chip);color:var(--muted);white-space:nowrap;}
+  .badge.on{background:var(--teal);color:#fff;}
+  .tools{display:flex;gap:7px;flex-wrap:wrap;margin:9px 0 8px;align-items:center;}
+  .tbtn{border:1px solid var(--line);background:var(--card);color:var(--ink);font-weight:700;font-size:12.5px;
+    border-radius:999px;min-height:34px;padding:0 13px;cursor:pointer;}
+  .tbtn.on{background:var(--navy);color:#fff;border-color:var(--navy);}
+  .seg{display:inline-flex;gap:0;}
+  .seg .tbtn:first-child{border-radius:999px 0 0 999px;}
+  .seg .tbtn:last-child{border-radius:0 999px 999px 0;border-left:0;}
+  .hint{font-size:12px;color:var(--muted);margin:0 2px 8px;}
+  .olist{display:grid;gap:7px;}
+  .orow{display:flex;align-items:center;gap:10px;background:var(--card);border:1px solid var(--line);border-radius:12px;padding:9px 10px 9px 12px;}
+  .orow.has{border-color:var(--teal);box-shadow:inset 3px 0 0 var(--teal);}
+  .orow .body{flex:1 1 auto;min-width:0;}
+  .oname{font-weight:600;font-size:14px;line-height:1.3;overflow-wrap:anywhere;}
+  .ometa{display:flex;flex-wrap:wrap;gap:4px 10px;font-size:11.5px;color:var(--muted);margin-top:3px;font-variant-numeric:tabular-nums;}
+  .qty{flex:0 0 auto;width:74px;min-height:44px;border:1px solid var(--line);border-radius:10px;text-align:center;
+    font-size:17px;font-weight:800;color:var(--teal);background:var(--bg);font-variant-numeric:tabular-nums;font-family:inherit;appearance:none;}
+  .qty:focus,.fields input:focus,.p2-search:focus{outline:2px solid var(--teal);outline-offset:0;border-color:var(--teal);}
+  .actionbar{position:fixed;left:0;right:0;bottom:0;z-index:6;max-width:480px;margin:0 auto;display:flex;gap:8px;
+    padding:10px 16px calc(10px + env(safe-area-inset-bottom));background:var(--card);border-top:1px solid var(--line);
+    box-shadow:0 -4px 16px rgba(18,48,79,.10);}
+  .abtn{flex:1 1 0;min-height:50px;border-radius:12px;border:1px solid var(--line);background:var(--card);color:var(--ink);
+    font-weight:800;font-size:15px;cursor:pointer;display:inline-flex;align-items:center;justify-content:center;gap:7px;}
+  .abtn.primary{flex:1.6 1 0;background:var(--teal);border-color:var(--teal);color:#fff;}
+  .send-summary{font-size:13.5px;margin-bottom:6px;}
+  .send-files{list-style:none;margin:6px 0 10px;padding:0;font-size:13px;color:var(--muted);}
+  .send-files li{padding:2px 0;overflow-wrap:anywhere;}
+  .send-opts{display:grid;gap:8px;}
+  .send-opts[hidden]{display:none;}
+  .sopt{display:block;text-align:left;width:100%;border:1px solid var(--line);background:var(--bg);color:var(--ink);
+    border-radius:12px;padding:11px 13px;cursor:pointer;font-family:inherit;}
+  .sopt[hidden]{display:none;}
+  .sopt b{display:block;font-size:14.5px;}
+  .sopt span{display:block;font-size:12.5px;color:var(--muted);margin-top:2px;line-height:1.4;}
+  .sopt:first-child{border-color:var(--teal);background:#e7f3f2;}
+  .send-status{font-size:13px;margin-top:8px;color:var(--muted);}
+  .send-status:empty{display:none;}
+  .send-status.ok{color:#15803d;font-weight:600;}
+  .send-status.err{color:#b91c1c;font-weight:600;}
+  .sheet-x{float:right;border:0;background:none;font-size:20px;line-height:1;color:var(--muted);cursor:pointer;padding:0 2px;}
+  #print-area{display:none;}
+
+  @media print{
+    @page{size:A4 landscape;margin:10mm;}
+    html,body{background:#fff !important;color:#000 !important;max-width:none !important;box-shadow:none !important;margin:0 !important;}
+    body > *:not(#print-area){display:none !important;}
+    #print-area{display:block !important;font-family:Arial,Helvetica,sans-serif;font-size:11px;}
+    .pform{page-break-after:always;break-after:page;}
+    .pform:last-child{page-break-after:auto;break-after:auto;}
+    .pform h2{text-align:center;font-size:16px;margin:8px 0 2px;}
+    .pform h3{text-align:center;font-size:13px;margin:2px 0 6px;font-weight:700;}
+    .pcap{text-align:center;font-weight:700;font-size:12px;margin-bottom:4px;}
+    .phead{width:100%;border-collapse:collapse;}
+    .phead td{vertical-align:top;padding:4px 6px;}
+    .phead .box{border:1.5px solid #000;width:22%;height:38px;font-weight:700;}
+    .phead .mid{text-align:center;font-weight:700;}
+    .pdate{font-weight:700;font-size:13px;margin:4px 0 8px;}
+    .pt{width:100%;border-collapse:collapse;}
+    .pt th,.pt td{border:1px solid #000;padding:2px 5px;text-align:center;line-height:1.25;}
+    .pt th{background:#e5e5e5 !important;-webkit-print-color-adjust:exact;print-color-adjust:exact;font-size:10.5px;}
+    .pt td.l{text-align:left;}
+    .pt td.q{font-weight:700;font-size:12px;}
+    .pt tr{page-break-inside:avoid;}
+    .pinfo{width:100%;border-collapse:collapse;margin:6px 0 10px;}
+    .pinfo th,.pinfo td{border:1px solid #000;padding:5px 6px;text-align:left;}
+    .pinfo th{width:18%;}
+    .psign{margin-top:10px;display:grid;grid-template-columns:1fr 1fr 1fr;gap:8px 24px;font-size:11.5px;}
+    .psign div:first-child{grid-column:1 / -1;}
+  }
+
   @media (prefers-color-scheme:dark){
     :root:not([data-theme="light"]){
       --ink:#e6edf5; --muted:#9aa7b6; --line:#26313f; --bg:#0e141b; --card:#151d27; --chip:#1c2734;
@@ -153,6 +256,12 @@
     :root:not([data-theme="light"]) .tag.ext{background:#12302e;}
     :root:not([data-theme="light"]) .tag.phone{background:#132239;}
     :root:not([data-theme="light"]) .tag.pager{background:#2c2313;}
+    :root:not([data-theme="light"]) .due{background:#14243a;border-color:#22395a;color:#cfe0f5;}
+    :root:not([data-theme="light"]) .due.today{background:#2c2010;border-color:#5a3f17;color:#f7d9a8;}
+    :root:not([data-theme="light"]) .due.ok{background:#11291c;border-color:#1f4d33;color:#b9ebcd;}
+    :root:not([data-theme="light"]) .qty{color:#4fd0c9;}
+    :root:not([data-theme="light"]) .sopt:first-child{background:#12302e;}
+    :root:not([data-theme="light"]) .tbtn.on{background:#4fd0c9;border-color:#4fd0c9;color:#0e141b;}
   }
   @media (prefers-color-scheme:dark) and (min-width:520px){
     html:not([data-theme="light"]){background:#060a0f;}
@@ -164,12 +273,17 @@
     <div class="top-row">
       <div>
         <h1>MediLink</h1>
-        <div class="sub">Mater Dei Hospital directory · tap a number to call</div>
+        <div class="sub" id="top-sub">Mater Dei Hospital directory · tap a number to call</div>
       </div>
       <div class="top-actions">
         <button id="install-btn" class="installbtn" type="button" hidden>＋ Add to phone</button>
       </div>
     </div>
+    <div class="tabs" role="tablist">
+      <button type="button" class="tab on" role="tab" id="tab-dir" data-view="dir">Directory</button>
+      <button type="button" class="tab" role="tab" id="tab-order" data-view="order">Ordering <span class="dot" id="tab-order-dot" hidden></span></button>
+    </div>
+    <div id="dir-controls">
     <div class="search">
       <span class="mag">🔍</span>
       <input id="q" type="search" autocomplete="off" enterkeyhint="search" placeholder="Search a name or a number…" aria-label="Search the directory"/>
@@ -179,6 +293,7 @@
       <span class="chip" data-type="Extension">Extensions</span>
       <span class="chip" data-type="Phone number">Phone numbers</span>
       <span class="chip" data-type="Pager">Pagers</span>
+    </div>
     </div>
   </div>
   <main>
@@ -191,9 +306,73 @@
       </div>
       <button type="button" class="it-close" id="ios-tip-close" aria-label="Dismiss">✕</button>
     </div>
+    <div id="view-dir">
     <div class="count" id="count"></div>
     <div class="list" id="list"><div class="note">Loading the directory…</div></div>
+    </div>
+
+    <section id="view-order" aria-label="Ordering">
+      <div class="due" id="due-banner"></div>
+
+      <div class="card">
+        <div class="card-h">Stoma Care Clinic weekly order</div>
+        <div class="fields">
+          <label>Order date (Saturday)<input id="o-date" type="date"/></label>
+          <label>Officer i/c<input id="o-officer" type="text" autocomplete="name"/></label>
+          <label>Part 1 · team<input id="o-team" type="text"/></label>
+          <label>Part 2 · remarks<input id="o-remarks" type="text"/></label>
+        </div>
+      </div>
+
+      <div class="card recips">
+        <div class="card-h">Email goes to</div>
+        <div>To: <span class="addr">disposablessupplies.mdh@gov.mt</span><button type="button" class="copy" id="copy-to">Copy</button></div>
+        <div>CC: <span class="addr">stomacare.mdh@gov.mt</span><button type="button" class="copy" id="copy-cc">Copy</button></div>
+        <div style="color:var(--muted);font-size:12px;line-height:1.5;margin-top:4px;">Both forms go in <b>one email</b> as <b>two Excel attachments</b>, every Saturday.
+          <button type="button" class="linkbtn" id="btn-remind">Add a Saturday reminder to my calendar</button></div>
+      </div>
+
+      <div class="sec">
+        <div class="sec-h"><div><div class="sec-t">Part 1 · Disposables top-up</div><div class="sec-s">M.M.M.U. IRO Top-Up System List · enter <b>Required</b></div></div><span class="badge" id="p1-count"></span></div>
+        <div class="tools">
+          <button type="button" class="tbtn" id="p1-fill">Fill blanks with top-up qty</button>
+          <button type="button" class="tbtn" id="p1-clear">Clear</button>
+        </div>
+        <div class="olist" id="p1-list"></div>
+      </div>
+
+      <div class="sec">
+        <div class="sec-h"><div><div class="sec-t">Part 2 · Cleaning consumables</div><div class="sec-s">Cleaning Consumables Order List · enter <b>Demand</b></div></div><span class="badge" id="p2-count"></span></div>
+        <div class="tools">
+          <span class="seg" id="p2-modes"><button type="button" class="tbtn on" data-mode="usual">Usual items</button><button type="button" class="tbtn" data-mode="all">All items</button></span>
+          <button type="button" class="tbtn" id="p2-clear">Clear</button>
+        </div>
+        <input class="p2-search" id="p2-q" type="search" autocomplete="off" placeholder="Search Part 2 items…" aria-label="Search Part 2 items" style="margin-bottom:8px;"/>
+        <div class="hint" id="p2-hint"></div>
+        <div class="olist" id="p2-list"></div>
+      </div>
+    </section>
   </main>
+  <div class="actionbar" id="order-actions">
+    <button type="button" class="abtn" id="btn-print">🖨️ Print</button>
+    <button type="button" class="abtn primary" id="btn-send">✉️ Send email</button>
+  </div>
+  <div id="send-sheet" class="sheet">
+    <div class="sheet-card" role="dialog" aria-modal="true" aria-label="Send the order by email">
+      <button type="button" class="sheet-x" id="send-close" aria-label="Close">✕</button>
+      <div class="sheet-title">Send the weekly order</div>
+      <div class="send-summary" id="send-summary"></div>
+      <div style="font-size:13px;line-height:1.6;">To: <b>disposablessupplies.mdh@gov.mt</b><br/>CC: <b>stomacare.mdh@gov.mt</b></div>
+      <ul class="send-files" id="send-files"></ul>
+      <div class="send-opts" id="send-options" hidden>
+        <button type="button" class="sopt" id="opt-share"><b>📱 Share to my email app</b><span>Opens Outlook / Gmail / Mail with both files attached. The To address is copied — paste it in, add the CC, and send.</span></button>
+        <button type="button" class="sopt" id="opt-eml"><b>📧 Open as a ready Outlook email</b><span>Downloads an email file with To, CC, subject and both attachments already filled in. Open it and click Send.</span></button>
+        <button type="button" class="sopt" id="opt-mailto"><b>⬇️ Download the 2 files + open email</b><span>Starts an email with To, CC and subject filled in. Attach the two downloaded files, then send.</span></button>
+      </div>
+      <div class="send-status" id="send-status"></div>
+    </div>
+  </div>
+  <div id="print-area"></div>
   <div id="sheet" class="sheet">
     <div class="sheet-card" role="dialog" aria-modal="true" aria-label="Add to Home Screen">
       <div class="sheet-title">Add MediLink to your Home Screen</div>
@@ -336,6 +515,25 @@
     render();
   }
 
+  // ── Tabs: Directory / Ordering (remembered in the address as #ordering) ──
+  function setView(v){
+    document.body.setAttribute('data-view', v);
+    var tabs=document.querySelectorAll('.tabs .tab');
+    for(var i=0;i<tabs.length;i++) tabs[i].classList.toggle('on', tabs[i].getAttribute('data-view')===v);
+    document.getElementById('top-sub').textContent = v==='order'
+      ? 'Stoma Care Clinic · weekly order (Saturdays)'
+      : 'Mater Dei Hospital directory · tap a number to call';
+    var want = v==='order' ? '#ordering' : '';
+    if((location.hash||'')!==want){ try{ history.replaceState(null,'',location.pathname+location.search+want); }catch(e){} }
+    if(v==='order' && window.MediLinkOrdering) window.MediLinkOrdering.refresh();
+    window.scrollTo(0,0);
+  }
+  document.querySelector('.tabs').addEventListener('click',function(e){
+    var t=e.target.closest('.tab'); if(t) setView(t.getAttribute('data-view'));
+  });
+  window.addEventListener('hashchange',function(){ setView(location.hash==='#ordering'?'order':'dir'); });
+  setView(location.hash==='#ordering'?'order':'dir');
+
   document.getElementById('q').addEventListener('input',render);
   document.getElementById('filters').addEventListener('click',function(e){
     var chip=e.target.closest('.chip'); if(chip)setType(chip.getAttribute('data-type'));
@@ -425,5 +623,7 @@
         '<br/>Open this page from the published site rather than a local file.</div>';
     });
 </script>
+<script src="jszip.min.js"></script>
+<script src="ordering.js"></script>
 </body>
 </html>
