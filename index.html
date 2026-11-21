@@ -47,6 +47,12 @@
     font-size:16px;line-height:1.4;overflow-x:hidden;overscroll-behavior-y:contain;}
   a{color:inherit;text-decoration:none;}
 
+  /* Faint Christmas candy backdrop, painted behind all content. */
+  .xmas{position:fixed;inset:0;z-index:0;pointer-events:none;
+    background-image:url("data:image/svg+xml;base64,PHN2ZyB4bWxucz0iaHR0cDovL3d3dy53My5vcmcvMjAwMC9zdmciIHdpZHRoPSIxNzAiIGhlaWdodD0iMTcwIiB2aWV3Qm94PSIwIDAgMTcwIDE3MCI+PGcgdHJhbnNmb3JtPSJ0cmFuc2xhdGUoMjYsMjIpIHJvdGF0ZSgtMTQpIHNjYWxlKDEuMCkiPjxwYXRoIGQ9Ik0wLDQwIEwwLDggQTgsOCAwIDAgMSAxNiw4IiBmaWxsPSJub25lIiBzdHJva2U9IiNjNjI4MjgiIHN0cm9rZS13aWR0aD0iOCIgc3Ryb2tlLWxpbmVjYXA9InJvdW5kIi8+PHBhdGggZD0iTTAsNDAgTDAsOCBBOCw4IDAgMCAxIDE2LDgiIGZpbGw9Im5vbmUiIHN0cm9rZT0iI2ZmZmZmZiIgc3Ryb2tlLXdpZHRoPSI4LjQiIHN0cm9rZS1saW5lY2FwPSJidXR0IiBzdHJva2UtZGFzaGFycmF5PSI1IDkiLz48L2c+PGcgdHJhbnNmb3JtPSJ0cmFuc2xhdGUoMTIwLDEzOCkgcm90YXRlKDE2Nikgc2NhbGUoMS4wKSI+PHBhdGggZD0iTTAsNDAgTDAsOCBBOCw4IDAgMCAxIDE2LDgiIGZpbGw9Im5vbmUiIHN0cm9rZT0iI2M2MjgyOCIgc3Ryb2tlLXdpZHRoPSI4IiBzdHJva2UtbGluZWNhcD0icm91bmQiLz48cGF0aCBkPSJNMCw0MCBMMCw4IEE4LDggMCAwIDEgMTYsOCIgZmlsbD0ibm9uZSIgc3Ryb2tlPSIjZmZmZmZmIiBzdHJva2Utd2lkdGg9IjguNCIgc3Ryb2tlLWxpbmVjYXA9ImJ1dHQiIHN0cm9rZS1kYXNoYXJyYXk9IjUgOSIvPjwvZz48Zz48Y2lyY2xlIGN4PSIxMjgiIGN5PSIzNCIgcj0iMTIiIGZpbGw9IiNmZmZmZmYiIHN0cm9rZT0iI2M2MjgyOCIgc3Ryb2tlLXdpZHRoPSIzIi8+PHBhdGggZD0iTTEyOCwzNCBDMTMwLjQsMjUuNiAxMzcuNiwyOC4wIDEzNy4wLDM0IEMxMzYuNCw0MC4wIDEyNi44LDQyLjQgMTI4LDM0IFoiIGZpbGw9IiNkNjQ1NDEiIG9wYWNpdHk9IjAuOCIvPjxjaXJjbGUgY3g9IjEyOCIgY3k9IjM0IiByPSIyLjE2IiBmaWxsPSIjYzYyODI4Ii8+PC9nPjxnPjxjaXJjbGUgY3g9IjQwIiBjeT0iMTE4IiByPSIxMiIgZmlsbD0iI2ZmZmZmZiIgc3Ryb2tlPSIjYzYyODI4IiBzdHJva2Utd2lkdGg9IjMiLz48cGF0aCBkPSJNNDAsMTE4IEM0Mi40LDEwOS42IDQ5LjYsMTEyLjAgNDkuMCwxMTggQzQ4LjQsMTI0LjAgMzguOCwxMjYuNCA0MCwxMTggWiIgZmlsbD0iI2Q2NDU0MSIgb3BhY2l0eT0iMC44Ii8+PGNpcmNsZSBjeD0iNDAiIGN5PSIxMTgiIHI9IjIuMTYiIGZpbGw9IiNjNjI4MjgiLz48L2c+PGc+PHBhdGggZD0iTTkyLDc4IHEtMTAsLTYgLTIsLTE1IHE4LDkgMiwxNSBaIiBmaWxsPSIjMmY4ZjRlIi8+PHBhdGggZD0iTTkyLDc4IHExMCwtNiAyLC0xNSBxLTgsOSAtMiwxNSBaIiBmaWxsPSIjMmY4ZjRlIi8+PGNpcmNsZSBjeD0iODkiIGN5PSI4MCIgcj0iMi42IiBmaWxsPSIjZDEzNjM2Ii8+PGNpcmNsZSBjeD0iOTUiIGN5PSI4MCIgcj0iMi42IiBmaWxsPSIjZDEzNjM2Ii8+PGNpcmNsZSBjeD0iOTIiIGN5PSI4MyIgcj0iMi42IiBmaWxsPSIjZDEzNjM2Ii8+PC9nPjxjaXJjbGUgY3g9IjcwIiBjeT0iMjAiIHI9IjIiIGZpbGw9IiNjNjI4MjgiLz48Y2lyY2xlIGN4PSIxNTAiIGN5PSI5NiIgcj0iMiIgZmlsbD0iIzJmOGY0ZSIvPjxjaXJjbGUgY3g9IjE0IiBjeT0iNzAiIHI9IjIiIGZpbGw9IiMyZjhmNGUiLz48Y2lyY2xlIGN4PSI5NiIgY3k9IjE1MCIgcj0iMiIgZmlsbD0iI2M2MjgyOCIvPjxjaXJjbGUgY3g9IjYwIiBjeT0iNjYiIHI9IjEuNiIgZmlsbD0iI2Q2NDU0MSIvPjwvc3ZnPg==");
+    background-repeat:repeat;background-size:150px 150px;opacity:.08;}
+  main{position:relative;z-index:1;}
+
   /* Sticky header — pads around notches and rounded corners on phones. */
   .top{position:sticky;top:0;z-index:5;background:linear-gradient(90deg,var(--navy),var(--teal));color:#fff;
     padding:12px 16px 12px;padding-top:calc(12px + env(safe-area-inset-top));
@@ -153,6 +159,7 @@
     :root:not([data-theme="light"]) .tag.ext{background:#12302e;}
     :root:not([data-theme="light"]) .tag.phone{background:#132239;}
     :root:not([data-theme="light"]) .tag.pager{background:#2c2313;}
+    :root:not([data-theme="light"]) .xmas{opacity:.06;}
   }
   @media (prefers-color-scheme:dark) and (min-width:520px){
     html:not([data-theme="light"]){background:#060a0f;}
@@ -160,6 +167,7 @@
 </style>
 </head>
 <body>
+  <div class="xmas" aria-hidden="true"></div>
   <div class="top">
     <div class="top-row">
       <div>
