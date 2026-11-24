@@ -56,6 +56,17 @@
     background-repeat:repeat;background-size:235px 235px;opacity:.16;}
   main{position:relative;z-index:1;}
 
+  /* Constant gentle snowfall over the whole page. */
+  .snow{position:fixed;inset:0;z-index:15;pointer-events:none;overflow:hidden;}
+  .snow i{position:absolute;top:-14px;display:block;border-radius:50%;background:#fff;
+    box-shadow:0 0 2px rgba(255,255,255,.7);will-change:transform;
+    animation:snowfall linear infinite;}
+  @keyframes snowfall{
+    0%{transform:translate3d(0,-14px,0);}
+    100%{transform:translate3d(var(--drift,0px),105vh,0);}
+  }
+  @media(prefers-reduced-motion:reduce){ .snow{display:none;} }
+
   /* Sticky header — pads around notches and rounded corners on phones. */
   .top{position:sticky;top:0;z-index:5;background:linear-gradient(120deg,#9b1119,#7c0f16 48%,#15603a);color:#fff;
     padding:12px 16px 12px;padding-top:calc(12px + env(safe-area-inset-top));
@@ -178,11 +189,11 @@
 </head>
 <body>
   <div class="xmas" aria-hidden="true"></div>
+  <div class="snow" id="snow" aria-hidden="true"></div>
   <div class="top">
     <div class="top-row">
       <div>
         <h1>MediLink</h1>
-        <div class="sub">Mater Dei Hospital directory · tap a number to call</div>
       </div>
       <div class="top-actions">
         <button id="install-btn" class="installbtn" type="button" hidden>＋ Add to phone</button>
@@ -433,6 +444,28 @@
       }
     }catch(e){}
   }
+
+  // Gentle, constant snowfall — small flakes with random size, speed and drift.
+  (function(){
+    try{
+      if(window.matchMedia && window.matchMedia('(prefers-reduced-motion: reduce)').matches) return;
+      var snow=document.getElementById('snow'); if(!snow) return;
+      var N=window.innerWidth<520?36:60, frag=document.createDocumentFragment();
+      for(var i=0;i<N;i++){
+        var f=document.createElement('i');
+        var size=(Math.random()*3+2).toFixed(1);          // 2–5px
+        var dur=(Math.random()*8+7).toFixed(1);           // 7–15s to fall
+        f.style.left=(Math.random()*100).toFixed(2)+'vw';
+        f.style.width=size+'px'; f.style.height=size+'px';
+        f.style.opacity=(Math.random()*0.5+0.4).toFixed(2); // 0.4–0.9
+        f.style.setProperty('--drift',(Math.random()*40-20).toFixed(0)+'px');
+        f.style.animationDuration=dur+'s';
+        f.style.animationDelay=(-Math.random()*parseFloat(dur)).toFixed(1)+'s'; // start mid-fall
+        frag.appendChild(f);
+      }
+      snow.appendChild(frag);
+    }catch(e){}
+  })();
 
   fetch('directory.csv',{cache:'no-cache'})
     .then(function(res){ if(!res.ok)throw new Error('HTTP '+res.status); return res.text(); })
