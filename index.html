@@ -36,7 +36,7 @@
 <style>
   :root{
     --navy:#0f4d2e; --teal:#c1121f; --ink:#1f2937; --muted:#6b7280;
-    --line:#e2e8f0; --bg:#f6f1f1; --card:#ffffff; --chip:#f1e9ea;
+    --line:#dde3ec; --bg:#e7eaf1; --card:#f1f4f9; --chip:#e4e9f1;
     --ext:#c1121f; --phone:#1f7a44; --pager:#9a6a12;
     --xred-bg:#fdeaea; --xred-bd:#f3c6c6; --xgreen-bg:#e6f3ec; --xgreen-bd:#bfe3cb;
     --xgold-bg:#fbefcf; --xgold-bd:#eccf8a;
@@ -58,12 +58,16 @@
 
   /* Constant gentle snowfall over the whole page. */
   .snow{position:fixed;inset:0;z-index:15;pointer-events:none;overflow:hidden;}
-  .snow i{position:absolute;top:-14px;display:block;border-radius:50%;background:#fff;
-    box-shadow:0 0 2px rgba(255,255,255,.7);will-change:transform;
-    animation:snowfall linear infinite;}
+  .snow i{position:absolute;top:-14px;display:block;border-radius:50%;
+    background:radial-gradient(circle at 35% 30%,#ffffff 0%,#eaf1fb 55%,#c9dbf0 100%);
+    box-shadow:0 0 0 1px rgba(120,150,190,.30),0 0 3px 1px rgba(80,110,150,.45);
+    will-change:transform;animation:snowfall linear infinite;}
+  /* Slow fall with a gentle side-to-side drift, like real snow. */
   @keyframes snowfall{
     0%{transform:translate3d(0,-14px,0);}
-    100%{transform:translate3d(var(--drift,0px),105vh,0);}
+    30%{transform:translate3d(var(--sway,12px),30vh,0);}
+    60%{transform:translate3d(calc(var(--sway,12px) * -1),62vh,0);}
+    100%{transform:translate3d(0,106vh,0);}
   }
   @media(prefers-reduced-motion:reduce){ .snow{display:none;} }
 
@@ -138,7 +142,7 @@
   /* MediLink is a mobile app: on tablets and desktop browsers it stays a phone-sized
      column centred on the screen instead of stretching into a wide web layout. */
   @media(min-width:520px){
-    html{background:#e9dede;}
+    html{background:#dde3ec;}
     body{max-width:480px;margin:0 auto;min-height:100vh;box-shadow:0 0 0 1px var(--line),0 10px 40px rgba(18,48,79,.18);}
   }
 
@@ -453,12 +457,13 @@
       var N=window.innerWidth<520?36:60, frag=document.createDocumentFragment();
       for(var i=0;i<N;i++){
         var f=document.createElement('i');
-        var size=(Math.random()*3+2).toFixed(1);          // 2–5px
-        var dur=(Math.random()*8+7).toFixed(1);           // 7–15s to fall
+        var size=(Math.random()*4+3).toFixed(1);          // 3–7px
+        var dur=(Math.random()*14+16).toFixed(1);         // 16–30s to fall (gentle)
+        var sway=(Math.random()*22+8).toFixed(0);         // 8–30px drift
         f.style.left=(Math.random()*100).toFixed(2)+'vw';
         f.style.width=size+'px'; f.style.height=size+'px';
-        f.style.opacity=(Math.random()*0.5+0.4).toFixed(2); // 0.4–0.9
-        f.style.setProperty('--drift',(Math.random()*40-20).toFixed(0)+'px');
+        f.style.opacity=(Math.random()*0.4+0.55).toFixed(2); // 0.55–0.95
+        f.style.setProperty('--sway',(Math.random()<0.5?'-':'')+sway+'px');
         f.style.animationDuration=dur+'s';
         f.style.animationDelay=(-Math.random()*parseFloat(dur)).toFixed(1)+'s'; // start mid-fall
         frag.appendChild(f);
